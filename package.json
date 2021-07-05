@@ -1,0 +1,31 @@
+{
+  "name": "critique-nagbot",
+  "version": "1.0.0",
+  "description": "A bot to nag Critique Gaming employees.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "watch": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/critique-gaming/critique-nagbot.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/critique-gaming/critique-nagbot/issues"
+  },
+  "homepage": "https://github.com/critique-gaming/critique-nagbot#readme",
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "discord.js-commando": "^0.12.3",
+    "dotenv": "^10.0.0",
+    "node-cron": "^3.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.8",
+    "prettier": "^2.3.2"
+  }
+}
