@@ -55,6 +55,7 @@ class PingCommand extends Command {
   constructor(client) {
     super(client, {
       name: "log",
+      aliases: ["raport"],
       memberName: "log",
       group: "daily",
       description: "Log your day",
