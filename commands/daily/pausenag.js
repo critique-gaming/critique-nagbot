@@ -15,16 +15,16 @@ class PauseNagCommand extends Command {
           prompt: "What user to pause nagging?",
           default: (msg) => msg.author,
         },
-      ]
+      ],
     });
   }
 
   async run(msg, { user }) {
     if (msg.author.id !== user.id && !this.client.isOwner(msg.author)) {
-      return await msg.reply(`Permission denied`)
+      return await msg.reply(`Permission denied`);
     }
-    setUserPaused(user.id, true)
-    return await msg.reply(`Nagging paused for ${user.username}.`)
+    setUserPaused(user.id, true);
+    return await msg.reply(`Nagging paused for ${user.username}.`);
   }
 }
 

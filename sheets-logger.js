@@ -3,7 +3,7 @@ const { format, utcToZonedTime } = require("date-fns-tz");
 
 const timeZone = process.env.TIMEZONE || "Europe/Bucharest";
 
-const formatStr = 'yyyy-MM-dd HH:mm:ss'
+const formatStr = "yyyy-MM-dd HH:mm:ss";
 
 async function logResponse(userId, userName, answers) {
   if (process.env.NODE_ENV !== "production") {

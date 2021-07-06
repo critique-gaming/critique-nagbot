@@ -4,20 +4,18 @@ require("dotenv").config();
 const path = require("path");
 const Commando = require("discord.js-commando");
 
-const nagState = require("./nag-state")
+const nagState = require("./nag-state");
 
 const client = new Commando.Client({
   commandPrefix: "?",
-  owner: process.env.DISCORD_BOT_OWNER_ID.split(','),
+  owner: process.env.DISCORD_BOT_OWNER_ID.split(","),
 });
 
 client.registry
-    .registerGroups([
-      ["daily", "Daily report commands"]
-    ])
-    .registerDefaults()
-    .registerCommandsIn(path.join(__dirname, 'commands'));
+  .registerGroups([["daily", "Daily report commands"]])
+  .registerDefaults()
+  .registerCommandsIn(path.join(__dirname, "commands"));
 
 client.login(process.env.DISCORD_BOT_TOKEN);
 
-nagState.setClient(client)
+nagState.setClient(client);

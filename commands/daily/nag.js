@@ -15,16 +15,16 @@ class NagCommand extends Command {
           prompt: "What user to nag?",
           default: (msg) => msg.author,
         },
-      ]
+      ],
     });
   }
 
   async run(msg, { user }) {
     if (msg.author.id !== user.id && !this.client.isOwner(msg.author)) {
-      return await msg.reply(`Permission denied`)
+      return await msg.reply(`Permission denied`);
     }
-    nag(user.id)
-    return await msg.reply(`${user.username} was nagged`)
+    nag(user.id);
+    return await msg.reply(`${user.username} was nagged`);
   }
 }
 

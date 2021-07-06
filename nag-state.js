@@ -1,48 +1,52 @@
-const cron = require("node-cron")
-const fs = require("fs/promises")
-const path = require("path")
+const cron = require("node-cron");
+const fs = require("fs/promises");
+const path = require("path");
 
 const timeZone = process.env.TIMEZONE || "Europe/Bucharest";
 const saveFile = process.env.SAVE_FILE || path.join(__dirname, "db.json");
 
 const state = new Map();
-let client
+let client;
 let channelId;
 
 function nag(userId) {
   if (process.env.NODE_ENV !== "production") {
-    console.log(`Nagging ${userId}...`)
+    console.log(`Nagging ${userId}...`);
   }
-  if (!client) return
-  const user = client.users.cache.get(userId)
-  if (!user) return
-  user.send("Hey! Don't forget to ?log")
+  if (!client) return;
+  const user = client.users.cache.get(userId);
+  if (!user) return;
+  user.send("Hey! Don't forget to ?log");
 }
 
 async function setClient(client_) {
-  client = client_
-  await load()
+  client = client_;
+  await load();
 }
 
 function kickWatchdog(userId) {
-  const userData = state.get(userId)
-  if (!userData) return
-  userData.lastLogTime = Date.now()
+  const userData = state.get(userId);
+  if (!userData) return;
+  userData.lastLogTime = Date.now();
 }
 
 function updateCron(userData) {
-  if (userData.task) userData.task.stop()
+  if (userData.task) userData.task.stop();
   if (!userData.nagTime) return;
-  const { minute, hour } = userData.nagTime
-  userData.task = cron.schedule(`${minute} ${hour} * * 0,1,2,3,4,5`, () => {
-    if (userData.paused) return
-    if (Date.now() - userData.lastLogTime < 1000 * 60 * 60 * 23) return
-    nag(userData.userId)
-  }, { timezone: timeZone })
+  const { minute, hour } = userData.nagTime;
+  userData.task = cron.schedule(
+    `${minute} ${hour} * * 0,1,2,3,4,5`,
+    () => {
+      if (userData.paused) return;
+      if (Date.now() - userData.lastLogTime < 1000 * 60 * 60 * 23) return;
+      nag(userData.userId);
+    },
+    { timezone: timeZone }
+  );
 }
 
 function addUser(userId, hour, minute, noOverride) {
-  let userData = state.get(userId)
+  let userData = state.get(userId);
   if (!userData) {
     userData = {
       userId,
@@ -50,64 +54,64 @@ function addUser(userId, hour, minute, noOverride) {
       paused: false,
       nagTime: null,
       task: null,
-    }
-    state.set(userId, userData)
+    };
+    state.set(userId, userData);
   } else if (noOverride) {
     return;
   }
-  userData.nagTime = { hour, minute }
-  updateCron(userData)
-  save()
+  userData.nagTime = { hour, minute };
+  updateCron(userData);
+  save();
 }
 
 function removeUser(userId) {
-  let userData = state.get(userId)
-  if (!userData) return
-  if (userData.task) userData.task.stop()
-  userData.delete(userId)
-  save()
+  let userData = state.get(userId);
+  if (!userData) return;
+  if (userData.task) userData.task.stop();
+  userData.delete(userId);
+  save();
 }
 
 function setUserPaused(userId, paused) {
-  let userData = state.get(userId)
-  if (!userData) return
-  userData.paused = paused
-  save()
+  let userData = state.get(userId);
+  if (!userData) return;
+  userData.paused = paused;
+  save();
 }
 
 function getUsers() {
-  return state
+  return state;
 }
 
 function setChannelId(channelId_) {
-  channelId = channelId_
-  save()
+  channelId = channelId_;
+  save();
 }
 
 function getChannelId() {
-  return channelId
+  return channelId;
 }
 
 async function save() {
   const data = {
-    naggedUsers: Array.from(state.values()).map(v => ({ ...v, task: null })),
+    naggedUsers: Array.from(state.values()).map((v) => ({ ...v, task: null })),
     nagChannelId: channelId,
-  }
-  await fs.writeFile(saveFile, JSON.stringify(data, null, 2), 'utf8');
+  };
+  await fs.writeFile(saveFile, JSON.stringify(data, null, 2), "utf8");
 }
 
 async function load() {
-  let data
+  let data;
   try {
-    data = JSON.parse(await fs.readFile(saveFile, "utf8"))
+    data = JSON.parse(await fs.readFile(saveFile, "utf8"));
   } catch (ex) {}
-  if (!data) return
+  if (!data) return;
 
-  channelId = data.nagChannelId
-  data.naggedUsers.forEach(user => {
-    state.set(user.userId, user)
-    updateCron(user)
-  })
+  channelId = data.nagChannelId;
+  data.naggedUsers.forEach((user) => {
+    state.set(user.userId, user);
+    updateCron(user);
+  });
 }
 
 module.exports = {
@@ -120,4 +124,4 @@ module.exports = {
   getUsers,
   setChannelId,
   getChannelId,
-}
+};

@@ -23,9 +23,10 @@ class NagUserCommand extends Command {
             u.paused ? " [Paused]" : ""
           }${
             u.lastLogTime !== 0
-              ? " Last logged: " + new Date(u.lastLogTime).toLocaleString('en-RO', {
-                timeZone: 'Europe/Bucharest',
-              })
+              ? " Last logged: " +
+                new Date(u.lastLogTime).toLocaleString("en-RO", {
+                  timeZone: "Europe/Bucharest",
+                })
               : ""
           }`;
         })

@@ -15,16 +15,16 @@ class ResumeNagCommand extends Command {
           prompt: "What user to resume nagging?",
           default: (msg) => msg.author,
         },
-      ]
+      ],
     });
   }
 
   async run(msg, { user }) {
     if (msg.author.id !== user.id && !this.client.isOwner(msg.author)) {
-      return await msg.reply(`Permission denied`)
+      return await msg.reply(`Permission denied`);
     }
-    setUserResumed(user.id, true)
-    return await msg.reply(`Nagging resumed for ${user.username}.`)
+    setUserResumed(user.id, true);
+    return await msg.reply(`Nagging resumed for ${user.username}.`);
   }
 }
 

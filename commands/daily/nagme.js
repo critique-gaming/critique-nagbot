@@ -25,13 +25,17 @@ class NagMeCommand extends Command {
           max: 59,
           default: 0,
         },
-      ]
+      ],
     });
   }
 
   async run(msg, { hour, minute }) {
-    addUser(msg.author.id, hour, minute)
-    return await msg.reply(`You will be nagged every work day at ${hour}:${minute.toString().padStart(2, '0')}`)
+    addUser(msg.author.id, hour, minute);
+    return await msg.reply(
+      `You will be nagged every work day at ${hour}:${minute
+        .toString()
+        .padStart(2, "0")}`
+    );
   }
 }
 

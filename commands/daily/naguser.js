@@ -31,16 +31,20 @@ class NagUserCommand extends Command {
           max: 59,
           default: 0,
         },
-      ]
+      ],
     });
   }
 
   async run(msg, { user, hour, minute }) {
     if (msg.author.id !== user.id && !this.client.isOwner(msg.author)) {
-      return await msg.reply(`Permission denied`)
+      return await msg.reply(`Permission denied`);
     }
-    addUser(user.id, hour, minute)
-    return await msg.reply(`${user.username} will be nagged every work day at ${hour}:${minute.toString().padStart(2, '0')}`)
+    addUser(user.id, hour, minute);
+    return await msg.reply(
+      `${user.username} will be nagged every work day at ${hour}:${minute
+        .toString()
+        .padStart(2, "0")}`
+    );
   }
 }
 
