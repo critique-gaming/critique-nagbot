@@ -1,9 +1,13 @@
 const cron = require("node-cron")
+const fs = require("fs/promises")
+const path = require("path")
 
 const timeZone = process.env.TIMEZONE || "Europe/Bucharest";
+const saveFile = process.env.SAVE_FILE || path.join(__dirname, "db.json");
 
 const state = new Map();
 let client
+let channelId;
 
 function nag(userId) {
   if (process.env.NODE_ENV !== "production") {
@@ -15,14 +19,26 @@ function nag(userId) {
   user.send("Hey! Don't forget to ?log")
 }
 
-function setClient(client_) {
+async function setClient(client_) {
   client = client_
+  await load()
 }
 
 function kickWatchdog(userId) {
   const userData = state.get(userId)
   if (!userData) return
   userData.lastLogTime = Date.now()
+}
+
+function updateCron(userData) {
+  if (userData.task) userData.task.stop()
+  if (!userData.nagTime) return;
+  const { minute, hour } = userData.nagTime
+  userData.task = cron.schedule(`${minute} ${hour} * * 0,1,2,3,4,5`, () => {
+    if (userData.paused) return
+    if (Date.now() - userData.lastLogTime < 1000 * 60 * 60 * 23) return
+    nag(userData.userId)
+  }, { timezone: timeZone })
 }
 
 function addUser(userId, hour, minute, noOverride) {
@@ -40,13 +56,8 @@ function addUser(userId, hour, minute, noOverride) {
     return;
   }
   userData.nagTime = { hour, minute }
-
-  if (userData.task) userData.task.stop()
-  userData.task = cron.schedule(`${minute} ${hour} * * 0,1,2,3,4,5`, () => {
-    if (userData.paused) return
-    if (Date.now() - userData.lastLogTime < 1000 * 60 * 60 * 23) return
-    nag(userData.userId)
-  }, { timezone: timeZone })
+  updateCron(userData)
+  save()
 }
 
 function removeUser(userId) {
@@ -54,16 +65,49 @@ function removeUser(userId) {
   if (!userData) return
   if (userData.task) userData.task.stop()
   userData.delete(userId)
+  save()
 }
 
 function setUserPaused(userId, paused) {
   let userData = state.get(userId)
   if (!userData) return
   userData.paused = paused
+  save()
 }
 
 function getUsers() {
   return state
+}
+
+function setChannelId(channelId_) {
+  channelId = channelId_
+  save()
+}
+
+function getChannelId() {
+  return channelId
+}
+
+async function save() {
+  const data = {
+    naggedUsers: Array.from(state.values()).map(v => ({ ...v, task: null })),
+    nagChannelId: channelId,
+  }
+  await fs.writeFile(saveFile, JSON.stringify(data, null, 2), 'utf8');
+}
+
+async function load() {
+  let data
+  try {
+    data = JSON.parse(await fs.readFile(saveFile, "utf8"))
+  } catch (ex) {}
+  if (!data) return
+
+  channelId = data.nagChannelId
+  data.naggedUsers.forEach(user => {
+    state.set(user.userId, user)
+    updateCron(user)
+  })
 }
 
 module.exports = {
@@ -74,4 +118,6 @@ module.exports = {
   kickWatchdog,
   nag,
   getUsers,
+  setChannelId,
+  getChannelId,
 }

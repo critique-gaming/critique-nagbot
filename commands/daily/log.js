@@ -1,6 +1,6 @@
 const { Command } = require("discord.js-commando");
 const { logResponse } = require("../../sheets-logger");
-const { kickWatchdog } = require("../../nag-state");
+const { kickWatchdog, getChannelId } = require("../../nag-state");
 
 const trueFilter = () => true;
 
@@ -106,10 +106,13 @@ class PingCommand extends Command {
     await logResponse(msg.author.id, msg.author.username, questions.map(q => replies[q.id]))
     kickWatchdog(msg.author.id)
 
-    if (msg.channel.type !== "dm") {
+    const channelId = getChannelId()
+    const channel = channelId && this.client.channels.cache.get(channelId)
+
+    if (channel) {
       const publicAsk = await msg.author.send("Thanks! Your response has been recorded! Would you like to post this publicly?")
       if (await emojiPrompt(publicAsk, msg.author)) {
-        await msg.channel.send(`${msg.author.username} just logged their day:\n${questions
+        await channel.send(`${msg.author.username} just logged their day:\n${questions
           .map((q) => `**${q.label}**: ${replies[q.id]}`)
           .join("\n")}`
         );
