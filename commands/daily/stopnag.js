@@ -20,7 +20,7 @@ class StopNagCommand extends Command {
   }
 
   async run(msg, { user }) {
-    if (msg.author.id !== user.id || !this.client.isOwner(user)) {
+    if (msg.author.id !== user.id || !this.client.isOwner(msg.author)) {
       return await msg.reply(`Permission denied`)
     }
     removeUser(user.id)
