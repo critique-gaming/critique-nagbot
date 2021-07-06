@@ -36,7 +36,7 @@ class NagUserCommand extends Command {
   }
 
   async run(msg, { user, hour, minute }) {
-    if (msg.author.id !== user.id && !this.client.isOwner(user)) {
+    if (msg.author.id !== user.id || !this.client.isOwner(user)) {
       return await msg.reply(`Permission denied`)
     }
     addUser(user.id, hour, minute)
