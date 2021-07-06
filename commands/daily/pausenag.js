@@ -20,7 +20,7 @@ class PauseNagCommand extends Command {
   }
 
   async run(msg, { user }) {
-    if (msg.author.id !== user.id && !self.client.isOwner(user)) {
+    if (msg.author.id !== user.id && !this.client.isOwner(user)) {
       return await msg.reply(`Permission denied`)
     }
     setUserPaused(user.id, true)
