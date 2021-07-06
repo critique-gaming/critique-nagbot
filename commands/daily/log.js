@@ -30,6 +30,27 @@ const questions = [
   },
 ];
 
+async function emojiPrompt(message, author) {
+  await message.react(positiveReaction);
+  await message.react(negativeReaction);
+
+  const reactionFilter = (reaction, user) => {
+    return (
+      [positiveReaction, negativeReaction].includes(reaction.emoji.name) &&
+      user.id === author.id
+    );
+  };
+  const reaction = (
+    await message.awaitReactions(reactionFilter, {
+      max: 1,
+      time: 60000,
+      errors: ["time"],
+    })
+  ).first();
+
+  return reaction.emoji.name === positiveReaction
+}
+
 class PingCommand extends Command {
   constructor(client) {
     super(client, {
@@ -73,24 +94,7 @@ class PingCommand extends Command {
           .map((q) => `**${q.label}**: ${replies[q.id]}`)
           .join("\n")}`
       );
-      await finalMessage.react(positiveReaction);
-      await finalMessage.react(negativeReaction);
-
-      const reactionFilter = (reaction, user) => {
-        return (
-          [positiveReaction, negativeReaction].includes(reaction.emoji.name) &&
-          user.id === msg.author.id
-        );
-      };
-      const reaction = (
-        await finalMessage.awaitReactions(reactionFilter, {
-          max: 1,
-          time: 60000,
-          errors: ["time"],
-        })
-      ).first();
-
-      if (reaction.emoji.name === negativeReaction) {
+      if (!await emojiPrompt(finalMessage, msg.author)) {
         return await msg.author.send("You cancelled your response and it will not be recorded.")
       }
     } catch (ex) {
@@ -99,10 +103,20 @@ class PingCommand extends Command {
       this.client.dispatcher.removeInhibitor(inhibitor);
     }
 
-    await logResponse(msg.author.id, msg.author.username, replies)
+    await logResponse(msg.author.id, msg.author.username, questions.map(q => replies[q.id]))
     kickWatchdog(msg.author.id)
 
-    return await msg.author.send("Thanks! Your response has been recorded!")
+    if (msg.channel.type !== "dm") {
+      const publicAsk = await msg.author.send("Thanks! Your response has been recorded! Would you like to post this publicly?")
+      if (await emojiPrompt(publicAsk, msg.author)) {
+        await msg.channel.send(`${msg.author.username} just logged their day:\n${questions
+          .map((q) => `**${q.label}**: ${replies[q.id]}`)
+          .join("\n")}`
+        );
+      }
+    } else {
+      await msg.author.send("Thanks! Your response has been recorded!")
+    }
   }
 }
 

@@ -8,7 +8,7 @@ const nagState = require("./nag-state")
 
 const client = new Commando.Client({
   commandPrefix: "?",
-  ownerID: process.env.DISCORD_BOT_OWNER_ID,
+  owner: process.env.DISCORD_BOT_OWNER_ID.split(','),
 });
 
 client.registry

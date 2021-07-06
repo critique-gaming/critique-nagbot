@@ -1,5 +1,7 @@
 const cron = require("node-cron")
 
+const timeZone = process.env.TIMEZONE || "Europe/Bucharest";
+
 const state = new Map();
 let client
 
@@ -44,7 +46,7 @@ function addUser(userId, hour, minute, noOverride) {
     if (userData.paused) return
     if (Date.now() - userData.lastLogTime < 1000 * 60 * 60 * 23) return
     nag(userData.userId)
-  }, { timezone: 'Europe/Bucharest' })
+  }, { timezone: timeZone })
 }
 
 function removeUser(userId) {
