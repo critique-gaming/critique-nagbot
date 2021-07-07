@@ -16,7 +16,7 @@ function nag(userId) {
   if (!client) return;
   const user = client.users.cache.get(userId);
   if (!user) return;
-  user.send("Hey! Don't forget to ?log");
+  user.send("Salutare, soldat! Nu uita să-mi dai `?raport`-ul!");
 }
 
 async function setClient(client_) {

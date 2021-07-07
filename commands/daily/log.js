@@ -10,12 +10,12 @@ const negativeReaction = "❌";
 const questions = [
   {
     id: "review",
-    label: "Review",
+    label: "📈 Raport",
     text: "Cum a mers ce ți-ai propus să obții de data trecută?",
   },
   {
     id: "satisfaction",
-    label: "Satisfaction",
+    label: "👀 Satisfacție",
     text: " Între 1 și 5, cât de satisfăcut ești cu munca ta? ",
     validate: (x) => {
       const n = parseInt(x, 10);
@@ -25,7 +25,7 @@ const questions = [
   },
   {
     id: "goal",
-    label: "Goal",
+    label: "🏆 Țel",
     text: "Ce îți propui să obții până data viitoare?",
   },
 ];
@@ -54,9 +54,9 @@ async function emojiPrompt(message, author) {
 class PingCommand extends Command {
   constructor(client) {
     super(client, {
-      name: "log",
-      aliases: ["raport"],
-      memberName: "log",
+      name: "raport",
+      aliases: ["log"],
+      memberName: "raport",
       group: "daily",
       description: "Log your day",
     });
@@ -93,17 +93,17 @@ class PingCommand extends Command {
       }
 
       const finalMessage = await msg.author.send(
-        `**Is this correct?**\n${questions
+        `**Am luat bine la cunoștiință?**\n${questions
           .map((q) => `**${q.label}**: ${replies[q.id]}`)
           .join("\n")}`
       );
       if (!(await emojiPrompt(finalMessage, msg.author))) {
         return await msg.author.send(
-          "You cancelled your response and it will not be recorded."
+          "Ți-ai anulat raportul și nu va fi înregistrat."
         );
       }
     } catch (ex) {
-      return await msg.author.send("Your response timed out.");
+      return await msg.author.send("Ai fost prea leneș, soldat!");
     } finally {
       this.client.dispatcher.removeInhibitor(inhibitor);
     }
@@ -120,17 +120,17 @@ class PingCommand extends Command {
 
     if (channel) {
       const publicAsk = await msg.author.send(
-        "Thanks! Your response has been recorded! Would you like to post this publicly?"
+        "Să trăiești, soldat! Raportul tău a fost înregistrat! Vrei să distribui raportul tău cu restul unitătii?"
       );
       if (await emojiPrompt(publicAsk, msg.author)) {
         await channel.send(
-          `${msg.author.username} just logged their day:\n${questions
+          `**${msg.author.username}** tocmai a fost prezent la raport:\n${questions
             .map((q) => `**${q.label}**: ${replies[q.id]}`)
             .join("\n")}`
         );
       }
     } else {
-      await msg.author.send("Thanks! Your response has been recorded!");
+      await msg.author.send("Să trăiești, soldat! Raportul tău a fost înregistrat!");
     }
   }
 }
