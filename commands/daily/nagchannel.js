@@ -6,7 +6,7 @@ class NagChannelCommand extends Command {
     super(client, {
       name: "nagchannel",
       memberName: "nagchannel",
-      group: "util",
+      group: "daily",
       description: "Sets the channel where to post public logs",
       isOwner: true,
       args: [
