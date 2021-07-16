@@ -35,7 +35,7 @@ function updateCron(userData) {
   if (!userData.nagTime) return;
   const { minute, hour } = userData.nagTime;
   userData.task = cron.schedule(
-    `${minute} ${hour} * * 0,1,2,3,4,5`,
+    `${minute} ${hour} * * 1,2,3,4,5`,
     () => {
       if (userData.paused) return;
       if (Date.now() - userData.lastLogTime < 1000 * 60 * 60 * 23) return;
