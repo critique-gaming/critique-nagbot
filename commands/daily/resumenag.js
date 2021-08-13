@@ -1,5 +1,5 @@
 const { Command } = require("discord.js-commando");
-const { setUserResumed } = require("../../nag-state");
+const { setUserPaused } = require("../../nag-state");
 
 class ResumeNagCommand extends Command {
   constructor(client) {
@@ -23,7 +23,7 @@ class ResumeNagCommand extends Command {
     if (msg.author.id !== user.id && !this.client.isOwner(msg.author)) {
       return await msg.reply(`Permission denied`);
     }
-    setUserResumed(user.id, true);
+    setUserPaused(user.id, false);
     return await msg.reply(`Nagging resumed for ${user.username}.`);
   }
 }
