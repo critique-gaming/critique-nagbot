@@ -38,7 +38,7 @@ function updateCron(userData) {
     `${minute} ${hour} * * 1,2,3,4,5`,
     () => {
       if (userData.paused) return;
-      if (Date.now() - userData.lastLogTime < 1000 * 60 * 60 * 23) return;
+      if (Date.now() - userData.lastLogTime < 1000 * 60 * 60 * 18) return;
       nag(userData.userId);
     },
     { timezone: timeZone }
