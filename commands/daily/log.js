@@ -6,7 +6,7 @@ const trueFilter = () => true;
 
 const positiveReaction = "✅";
 const negativeReaction = "❌";
-const silentReaction = "👀";
+const silentReaction = "🙈";
 
 const questions = [
   {
@@ -113,7 +113,7 @@ class PingCommand extends Command {
       const finalMessage = await msg.author.send(
         `**Am luat bine la cunoștiință?**\n${questions
           .map((q) => `**${q.label}**: ${replies[q.id]}`)
-          .join("\n")}\n\n${options.map(o => `${o.react} ${o.desc}`).join("\n")}`
+          .join("\n")}\n\n**Răspunde cu:**\n${options.map(o => `${o.react} ${o.desc}`).join("\n")}`
       );
       const result = await emojiPrompt(finalMessage, msg.author, options);
 
