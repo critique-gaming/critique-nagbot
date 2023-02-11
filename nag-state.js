@@ -68,7 +68,7 @@ function removeUser(userId) {
   let userData = state.get(userId);
   if (!userData) return;
   if (userData.task) userData.task.stop();
-  userData.delete(userId);
+  state.delete(userId);
   save();
 }
 
