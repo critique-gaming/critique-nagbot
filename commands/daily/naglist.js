@@ -17,7 +17,7 @@ class NagUserCommand extends Command {
       Array.from(getUsers().values())
         .map((u) => {
           const user = this.client.users.cache.get(u.userId);
-          return `${user ? user.username : u.userId} is being nagged at ${
+          return `${user ? `${user.username} (${u.userId})` : u.userId} is being nagged at ${
             u.nagTime.hour
           }:${u.nagTime.minute.toString().padStart(2, "0")}.${
             u.paused ? " [Paused]" : ""
